@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Princípios e Regras - Análise Didática</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         * {
             box-sizing: border-box;
@@ -148,6 +149,146 @@
         .card-question, .card-answer {
             font-size: 1rem;
         }
+        /* Estilos do Simulado */
+        .quiz-item {
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        .quiz-item p {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .quiz-options label {
+            display: block;
+            margin-bottom: 8px;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .quiz-options label:hover {
+            background-color: #f0f8ff;
+        }
+        .quiz-options input {
+            margin-right: 10px;
+        }
+        #submit-quiz-btn, #download-certificate-btn {
+            display: block;
+            width: 100%;
+            max-width: 300px;
+            margin: 20px auto 0;
+            padding: 15px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: white;
+            background-color: #27ae60;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        #submit-quiz-btn:hover, #download-certificate-btn:hover {
+            background-color: #229954;
+        }
+        #submit-quiz-btn {
+            display: none; /* Inicia oculto */
+        }
+        #download-certificate-btn {
+            background-color: #2980b9;
+        }
+        #download-certificate-btn:hover {
+            background-color: #2471a3;
+        }
+        #quiz-result {
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-top: 30px;
+        }
+        .correct-answer {
+            background-color: #d4edda !important;
+            border: 1px solid #c3e6cb;
+        }
+        .wrong-answer {
+            background-color: #f8d7da !important;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* Estilos do Mapa Mental Estático */
+        .mindmap-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            padding: 20px;
+        }
+        .mindmap-node {
+            background-color: #3498db;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 25px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            font-weight: bold;
+            position: relative;
+            z-index: 1;
+        }
+        .mindmap-level-1 {
+            margin-top: 40px;
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+        }
+        .mindmap-level-2 {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+        .mindmap-level-2 ul {
+            list-style: none;
+            padding: 0;
+            margin-top: 20px;
+            position: relative;
+        }
+        .mindmap-level-2 ul::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            width: 2px;
+            height: 20px;
+            background-color: #3498db;
+        }
+        .mindmap-level-2 ul li {
+            margin-top: 15px;
+            position: relative;
+        }
+        .mindmap-level-2 ul li .mindmap-node {
+            background-color: #2c3e50;
+        }
+        .mindmap-level-2 ul li::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: -15px;
+            width: 15px;
+            height: 2px;
+            background-color: #2c3e50;
+        }
+        .mindmap-root-node {
+            background-color: #2c3e50;
+            color: white;
+            font-size: 1.2rem;
+        }
+        .mindmap-branch {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0 20px;
+        }
+        
         footer {
             text-align: center;
             margin-top: 40px;
@@ -166,6 +307,12 @@
             .cards-container {
                 grid-template-columns: 1fr;
             }
+            .mindmap-level-1 {
+                flex-direction: column;
+            }
+            .mindmap-branch {
+                margin-top: 20px;
+            }
         }
     </style>
 </head>
@@ -181,22 +328,19 @@
             <button class="tab-button" onclick="openTab('cards')">Cards de Estudo</button>
             <button class="tab-button" onclick="openTab('critique')">Resenha Crítica</button>
             <button class="tab-button" onclick="openTab('deepDive')">Por dentro do Assunto</button>
+            <button class="tab-button" onclick="openTab('quiz')">Simulado</button>
         </div>
 
         <div id="summary" class="tab-content active">
             <div class="content-section">
                 <h2>Resumo do Artigo</h2>
                 <p>O artigo "Princípios e regras: mitos e equívocos acerca de uma distinção" de Virgílio Afonso da Silva discute a distinção entre princípios e regras no direito, com foco na recepção dessa distinção no Brasil. O autor parte da teoria de Robert Alexy, que defende uma distinção qualitativa (e não apenas de grau) entre princípios e regras, e analisa criticamente como essa distinção tem sido compreendida e aplicada no contexto jurídico brasileiro.</p>
-                
                 <h3>Estrutura e Conteúdo Principal</h3>
-                <p>O trabalho está dividido em duas partes principais: uma expositiva, que apresenta a distinção conforme as teorias de Ronald Dworkin и Robert Alexy; e outra crítica, dedicada à análise da recepção dessa distinção no Brasil e às críticas a alguns dos conceitos utilizados.</p>
-                
+                <p>O trabalho está dividido em duas partes principais: uma expositiva, que apresenta a distinção conforme as teorias de Ronald Dworkin e Robert Alexy; e outra crítica, dedicada à análise da recepção dessa distinção no Brasil e às críticas a alguns dos conceitos utilizados.</p>
                 <h3>Pontos Fundamentais da Distinção</h3>
                 <p>Segundo Alexy, princípios são "mandamentos de otimização" que devem ser realizados na maior medida possível, dentro das possibilidades fáticas e jurídicas. Em caso de colisão, requerem ponderação. Regras, por outro lado, são aplicadas na forma "tudo ou nada": se válidas, exigem que exatamente o que prescrevem seja realizado.</p>
-                
                 <h3>Problemas Identificados na Recepção Brasileira</h3>
                 <p>O autor identifica vários equívocos na recepção da distinção no Brasil, incluindo: confusão terminológica, desconsideração da distinção entre texto e norma, e incompreensão acerca dos deveres prima facie e definitivos.</p>
-                
                 <h3>Conclusão e Reflexão Final</h3>
                 <p>O artigo conclui alertando para o "sincretismo metodológico" no direito brasileiro, onde teorias incompatíveis são adotadas como se complementares fossem. Silva defende a coerência metodológica e a importância do dissenso para o desenvolvimento da literatura jurídica.</p>
             </div>
@@ -214,13 +358,10 @@
             <div class="content-section">
                 <h2>Resenha Crítica</h2>
                 <p>O artigo de Virgílio Afonso da Silva representa uma contribuição fundamental para a teoria do direito no Brasil. O autor demonstra profundo domínio não apenas da teoria de Robert Alexy, mas também das nuances de sua recepção no cenário jurídico nacional.</p>
-                
                 <h3>Pontos Fortes</h3>
                 <p>Um dos maiores méritos do trabalho reside na clareza com que o autor expõe a distinção qualitativa entre princípios e regras. A refutação das críticas equivocadas à teoria de Alexy, notadamente as de Humberto Bergmann Ávila, é precisa e analítica. A ênfase na distinção entre texto e norma é uma ferramenta valiosa para superar confusões frequentes.</p>
-                
                 <h3>Possíveis Limitações</h3>
                 <p>Poder-se-ia questionar se o autor não poderia ter explorado mais as implicações práticas da distinção em casos concretos. Além disso, uma análise mais profunda das razões sociológicas ou culturais para o "sincretismo metodológico" no Brasil poderia enriquecer o debate.</p>
-                
                 <h3>Contribuição e Relevância</h3>
                 <p>A relevância do artigo transcende o debate acadêmico. Ao defender a coerência metodológica, Silva oferece uma contribuição valiosa para a maturação da dogmática jurídica brasileira, chamando a atenção para a importância do rigor conceitual. É uma leitura indispensável para estudantes e profissionais do direito.</p>
             </div>
@@ -229,28 +370,61 @@
         <div id="deepDive" class="tab-content">
             <div class="content-section">
                 <h2>Por dentro do Assunto</h2>
+                <p>Use o mapa mental abaixo para visualizar os conceitos chave da distinção entre princípios e regras.</p>
+                <div class="mindmap-container">
+                    <div class="mindmap-node mindmap-root-node">Princípios e Regras</div>
+                    <div class="mindmap-level-1">
+                        <div class="mindmap-branch">
+                            <div class="mindmap-node">A Distinção de Robert Alexy</div>
+                            <div class="mindmap-level-2">
+                                <ul>
+                                    <li><div class="mindmap-node">Princípios</div></li>
+                                    <li><div class="mindmap-node">Regras</div></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="mindmap-branch">
+                            <div class="mindmap-node">Equívocos Comuns no Brasil</div>
+                            <div class="mindmap-level-2">
+                                <ul>
+                                    <li><div class="mindmap-node">Confusão entre Texto e Norma</div></li>
+                                    <li><div class="mindmap-node">Incompreensão dos Deveres</div></li>
+                                    <li><div class="mindmap-node">Sincretismo Metodológico</div></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
                 <h3>1. O Ponto de Partida: Por que essa Distinção é Importante?</h3>
                 <p>No direito, lidamos com diferentes tipos de normas. Algumas são diretas, como a que estabelece a maioridade aos 18 anos (regra). Outras indicam valores, como a dignidade da pessoa humana (princípio). A forma como aplicamos cada uma é diferente. Confundir isso pode levar a decisões judiciais equivocadas. O objetivo de Virgílio A. da Silva, ao analisar Alexy, é trazer rigor e clareza a essa aplicação.</p>
-
                 <h3>2. A Distinção Qualitativa de Robert Alexy</h3>
                 <p>Para Alexy, a diferença entre princípios e regras não é de importância ou abstração, mas de <strong>estrutura e natureza (qualitativa)</strong>.</p>
                 <ul>
                     <li><strong>Regras: Normas "Tudo ou Nada"</strong><br>Funcionam de maneira binária. Se os fatos previstos ocorrem, a consequência jurídica deve ser aplicada. Ex: Semáforo vermelho (fato) -> Parar (consequência). Não há meio-termo. Se duas regras conflitam, uma delas deve ser declarada inválida.</li>
                     <li><strong>Princípios: Mandamentos de Otimização</strong><br>São normas que ordenam que algo seja realizado na maior medida possível. Ex: Liberdade de imprensa vs. Direito à privacidade. Em caso de colisão, não se anulam. O juiz deve <strong>ponderar</strong> para ver qual prevalece no caso concreto, otimizando a aplicação de ambos.</li>
                 </ul>
-
                 <h3>3. Desfazendo Equívocos Comuns no Brasil</h3>
                 <p>Silva aponta que a teoria de Alexy foi muitas vezes mal compreendida no Brasil:</p>
                 <ul>
                     <li><strong>Confusão entre Texto e Norma:</strong> A distinção se aplica à <strong>norma</strong> (resultado da interpretação), não ao texto legal em si.</li>
                     <li><strong>Deveres <em>Prima Facie</em> vs. Definitivos:</strong> Princípios geram deveres <em>prima facie</em> ("à primeira vista"), que podem ser superados por outros princípios. Regras geram deveres definitivos, que devem ser cumpridos sem ponderação.</li>
                 </ul>
-
                 <h3>4. O Alerta Contra o "Sincretismo Metodológico"</h3>
                 <p>Este é um dos pontos altos do artigo. Significa misturar teorias incompatíveis. Por exemplo, usar a ponderação de Alexy, mas fundamentar a decisão na teoria de Müller, que rejeita a ponderação como método. É uma contradição que gera insegurança jurídica. Silva defende que é preciso adotar uma teoria e seguir suas premissas com rigor.</p>
-                
                 <h3>5. Conclusão Didática</h3>
                 <p>A lição do artigo é um chamado ao <strong>rigor conceitual</strong>. Compreender a distinção qualitativa entre princípios e regras nos dá uma ferramenta poderosa para interpretar o Direito Constitucional. Permite lidar com conflitos de direitos fundamentais de forma racional (ponderação) e, ao mesmo tempo, reconhecer a força impositiva das regras, que garantem a segurança jurídica.</p>
+            </div>
+        </div>
+        
+        <div id="quiz" class="tab-content">
+            <div class="content-section">
+                <h2>Simulado de Conhecimento</h2>
+                <p>Teste seus conhecimentos sobre o artigo. Responda a todas as 10 questões para ver o seu resultado.</p>
+                <div id="quiz-container"></div>
+                <button id="submit-quiz-btn" onclick="calculateResult()">Resultado</button>
+                <div id="quiz-result"></div>
+                <div id="certificate-container"></div>
             </div>
         </div>
 
@@ -275,7 +449,6 @@
             event.currentTarget.classList.add("active");
         }
         
-        // Ativa a primeira aba por padrão
         document.addEventListener("DOMContentLoaded", function() {
             document.querySelector(".tab-button").click();
         });
@@ -289,7 +462,7 @@
             { question: "O que caracteriza as regras segundo Alexy?", answer: "São aplicadas na forma 'tudo ou nada': se válidas, exigem que exatamente o que prescrevem seja realizado." },
             { question: "Como se resolvem as colisões entre princípios?", answer: "Através de ponderação ou sopesamento, para determinar qual princípio prevalece diante das condições concretas do caso." },
             { question: "O que são deveres prima facie?", answer: "São deveres que podem não se revelar definitivos num caso concreto, dependendo de ponderação com outros princípios." },
-            { question: "O que Silva identifica como 'sincretismo metodológico'?", answer: "A adoção de teorias incompatíveis (como a de Alexy e a de Müller) como se complementares fossem, sem preocupação com coerência." },
+            { question: "O que Silva identifica como 'sincretismo metodológico'?", answer: "A adoção de teorias incompatíveis (como a de Alexy e a de Müller) como se fossem complementares fosse, sem preocupação com coerência." },
             { question: "Qual a importância da distinção entre texto e norma?", answer: "É crucial para entender que a distinção (princípio/regra) diz respeito às normas (produto da interpretação) e não aos textos legais brutos." },
             { question: "Qual a diferença entre conflito de regras e colisão de princípios?", answer: "No conflito de regras, uma deve ser declarada inválida. Na colisão de princípios, ambos permanecem válidos, havendo apenas uma relação de precedência condicionada ao caso concreto." },
             { question: "Como Dworkin caracteriza a diferença entre princípios e regras?", answer: "Regras aplicam-se na forma 'tudo ou nada', enquanto princípios têm uma dimensão de peso e exigem ponderação." }
@@ -300,7 +473,7 @@
             const cardsContainer = document.querySelector('.cards-container');
             if (!cardsContainer) return;
 
-            cardsContainer.innerHTML = ''; // Limpa antes de gerar
+            cardsContainer.innerHTML = ''; 
             
             cardsData.forEach((data, index) => {
                 const card = document.createElement('div');
@@ -328,8 +501,212 @@
             });
         }
         
-        // Gera os cards quando a página carregar
-        document.addEventListener('DOMContentLoaded', generateCards);
+        // ---- LÓGICA DO SIMULADO ----
+        const quizData = [
+            {
+                question: "1. Segundo Robert Alexy, qual é a principal característica dos princípios?",
+                options: ["São aplicados de forma 'tudo ou nada'.", "São mandamentos de otimização.", "Sempre prevalecem sobre as regras.", "Geram deveres definitivos."],
+                answer: "São mandamentos de otimização."
+            },
+            {
+                question: "2. Como se resolve um conflito entre duas regras válidas?",
+                options: ["Através da ponderação.", "Ambas são aplicadas parcialmente.", "Uma delas deve ser declarada inválida.", "O juiz escolhe a mais justa."],
+                answer: "Uma delas deve ser declarada inválida."
+            },
+            {
+                question: "3. O que Virgílio Afonso da Silva critica como 'sincretismo metodológico'?",
+                options: ["O uso excessivo de citações estrangeiras.", "A mistura de teorias incompatíveis como se fossem complementares.", "A falta de debates sobre a teoria do direito no Brasil.", "A aplicação exclusiva da teoria de Alexy."],
+                answer: "A mistura de teorias incompatíveis como se fossem complementares."
+            },
+            {
+                question: "4. A distinção entre princípios e regras se aplica a quê?",
+                options: ["Aos textos da Constituição, exclusivamente.", "Aos artigos de lei, nunca à Constituição.", "À norma, que é o resultado da interpretação.", "Apenas a casos de direitos fundamentais."],
+                answer: "À norma, que é o resultado da interpretação."
+            },
+            {
+                question: "5. Uma colisão entre o princípio da liberdade de imprensa e o direito à privacidade é resolvida por qual método?",
+                options: ["Anulação de um dos princípios.", "Aplicação da regra 'tudo ou nada'.", "Ponderação, buscando otimizar ambos no caso concreto.", "Declaração de inconstitucionalidade de um deles."],
+                answer: "Ponderação, buscando otimizar ambos no caso concreto."
+            },
+            {
+                question: "6. Princípios geram deveres do tipo:",
+                options: ["Definitivos", "Absolutos", "Prima facie", "Incondicionais"],
+                answer: "Prima facie"
+            },
+            {
+                question: "7. Qual autor, além de Alexy, é central na formulação da distinção entre princípios e regras mencionada no artigo?",
+                options: ["Hans Kelsen", "Jürgen Habermas", "Friedrich Müller", "Ronald Dworkin"],
+                answer: "Ronald Dworkin"
+            },
+            {
+                question: "8. Uma norma que estabelece a maioridade penal aos 18 anos é um exemplo de:",
+                options: ["Princípio", "Regra", "Postulado", "Dever prima facie"],
+                answer: "Regra"
+            },
+             {
+                question: "9. Qual dos seguintes é um equívoco comum na recepção da teoria de Alexy no Brasil, apontado por Silva?",
+                options: ["A aplicação excessiva da ponderação.", "A desconsideração da distinção entre texto e norma.", "A tradução incorreta do termo 'mandamento de otimização'.", "A negação da existência de princípios no direito."],
+                answer: "A desconsideração da distinção entre texto e norma."
+            },
+            {
+                question: "10. Qual a principal consequência da aplicação de uma regra, segundo a teoria?",
+                options: ["Deve ser ponderada com outras regras.", "Exige que exatamente o que ela prescreve seja realizado.", "Pode ser cumprida em diferentes graus.", "Gera um dever que pode ser superado por um princípio."],
+                answer: "Exige que exatamente o que ela prescreve seja realizado."
+            }
+        ];
+
+        function generateQuiz() {
+            const quizContainer = document.getElementById('quiz-container');
+            if (!quizContainer) return;
+            quizContainer.innerHTML = '';
+            quizData.forEach((item, index) => {
+                const questionElement = document.createElement('div');
+                questionElement.className = 'quiz-item';
+                
+                let optionsHTML = item.options.map((option, optionIndex) => `
+                    <label class="quiz-option-label" for="q${index}_option${optionIndex}">
+                        <input type="radio" name="question${index}" id="q${index}_option${optionIndex}" value="${option}">
+                        ${option}
+                    </label>
+                `).join('');
+
+                questionElement.innerHTML = `
+                    <p>${item.question}</p>
+                    <div class="quiz-options">${optionsHTML}</div>
+                `;
+                quizContainer.appendChild(questionElement);
+            });
+            
+            // Adiciona listener para verificar quando mostrar o botão de resultado
+            quizContainer.addEventListener('change', checkAllAnswered);
+        }
+
+        function checkAllAnswered() {
+            const totalQuestions = quizData.length;
+            const answeredQuestions = document.querySelectorAll('input[type="radio"]:checked').length;
+            
+            if (totalQuestions === answeredQuestions) {
+                document.getElementById('submit-quiz-btn').style.display = 'block';
+            }
+        }
+
+        function calculateResult() {
+            let score = 0;
+            quizData.forEach((item, index) => {
+                const quizItem = document.querySelectorAll(`input[name="question${index}"]`);
+                const labels = document.querySelectorAll(`label[for^="q${index}_option"]`);
+                const selected = document.querySelector(`input[name="question${index}"]:checked`);
+                
+                // Desabilita os inputs após a verificação
+                quizItem.forEach(input => input.disabled = true);
+
+                if (selected) {
+                    const selectedLabel = selected.parentElement;
+                    if (selected.value === item.answer) {
+                        score++;
+                        selectedLabel.classList.add('correct-answer');
+                    } else {
+                        selectedLabel.classList.add('wrong-answer');
+                        // Mostra a resposta correta
+                        labels.forEach(label => {
+                            if(label.querySelector('input').value === item.answer) {
+                                label.classList.add('correct-answer');
+                            }
+                        });
+                    }
+                }
+            });
+
+            const percentage = (score / quizData.length) * 100;
+            const resultElement = document.getElementById('quiz-result');
+            resultElement.innerHTML = `Você acertou ${score} de ${quizData.length} questões (${percentage.toFixed(0)}%).`;
+            
+            if (percentage >= 60) {
+                const certificateContainer = document.getElementById('certificate-container');
+                certificateContainer.innerHTML = '<button id="download-certificate-btn">Baixar Certificado</button>';
+                document.getElementById('download-certificate-btn').addEventListener('click', generateCertificate);
+            }
+
+            // Oculta o botão de resultado após o clique
+            document.getElementById('submit-quiz-btn').style.display = 'none';
+        }
+
+        function generateCertificate() {
+            const userName = prompt("Por favor, digite seu nome completo para o certificado:", "");
+            if (!userName) {
+                alert("O nome é necessário para gerar o certificado.");
+                return;
+            }
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({
+                orientation: 'landscape',
+                unit: 'mm',
+                format: 'a4'
+            });
+
+            // Fundo e Borda
+            doc.setFillColor(245, 245, 245);
+            doc.rect(0, 0, 297, 210, 'F');
+            doc.setDrawColor(44, 62, 80);
+            doc.setLineWidth(1.5);
+            doc.rect(10, 10, 277, 190); 
+
+            // Título
+            doc.setFont('times', 'bold');
+            doc.setFontSize(34);
+            doc.setTextColor(44, 62, 80);
+            doc.text("CERTIFICADO DE APROVEITAMENTO", 148.5, 50, { align: 'center' });
+
+            // Corpo do texto
+            doc.setFont('times', 'normal');
+            doc.setFontSize(16);
+            doc.setTextColor(51, 51, 51);
+            doc.text("Certificamos que", 148.5, 80, { align: 'center' });
+
+            // Nome do usuário
+            doc.setFont('times', 'bolditalic');
+            doc.setFontSize(26);
+            doc.setTextColor(52, 152, 219);
+            doc.text(userName, 148.5, 95, { align: 'center' });
+            
+            // Texto de conclusão
+            doc.setFont('times', 'normal');
+            doc.setFontSize(16);
+            doc.setTextColor(51, 51, 51);
+            const text = `concluiu com sucesso o simulado sobre o artigo "Princípios e regras: mitos e equívocos acerca de uma distinção", de Virgílio Afonso da Silva, demonstrando notável compreensão sobre a teoria do direito.`;
+            const splitText = doc.splitTextToSize(text, 250);
+            doc.text(splitText, 148.5, 115, { align: 'center' });
+
+            // Data
+            const today = new Date();
+            const dateStr = today.toLocaleDateString('pt-BR');
+            doc.setFontSize(14);
+            doc.text(`Emitido em: ${dateStr}`, 148.5, 150, { align: 'center' });
+            
+            // Simulação de Assinatura
+            doc.setFont('times', 'italic');
+            doc.text("________________________", 148.5, 175, { align: 'center' });
+            doc.setFont('times', 'normal');
+            doc.text("Coordenação Didática", 148.5, 182, { align: 'center' });
+
+            // Ícone temático (Balança da Justiça - simplificado)
+            doc.setDrawColor(192, 192, 192);
+            doc.setLineWidth(0.5);
+            doc.line(25, 170, 25, 185); // Haste
+            doc.line(15, 170, 35, 170); // Trave
+            doc.circle(15, 175, 5); // Prato esquerdo
+            doc.circle(35, 175, 5); // Prato direito
+
+            // Salva o PDF
+            doc.save(`Certificado-${userName.replace(/\s/g, '_')}.pdf`);
+        }
+        
+        // Gera os cards e o simulado quando a página carregar
+        document.addEventListener('DOMContentLoaded', () => {
+            generateCards();
+            generateQuiz();
+        });
     </script>
 </body>
 </html>
